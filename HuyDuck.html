@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chúc mừng 8/3 – Lavender</title>
+  <style>
+    :root{
+      --bg1:#f3e9ff;        /* tím nhạt */
+      --bg2:#e9ddff;        /* tím pastel */
+      --primary:#7c5cff;    /* tím lavender */
+      --accent:#b18cff;     /* tím đậm hơn */
+      --text:#3d2f52;       /* tím sẫm cho chữ */
+      --card:#ffffffdd;
+      --shadow: 0 10px 30px rgba(16, 8, 32, .12);
+      --glowA: rgba(177, 140, 255, .40);
+      --glowB: rgba(124, 92, 255, .35);
+    }
+
+    *{ box-sizing: border-box }
+    html, body{
+      height:100%;
+      margin:0;
+      font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at -10% 40%, var(--bg2) 0, transparent 60%),
+        radial-gradient(1200px 600px at 110% 60%, var(--bg2) 0, transparent 60%),
+        linear-gradient(180deg, var(--bg1), #f7f3ff);
+      overflow-x:hidden;
+    }
+
+    /* Bokeh */
+    .bokeh{ position: fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+    .bokeh span{
+      position:absolute; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.85), rgba(255,255,255,.05));
+      filter: blur(2px);
+      opacity:.55;
+      animation: floatUp 14s linear infinite;
+    }
+    @keyframes floatUp{
+      0%{ transform:translateY(30vh) scale(1); opacity:.0 }
+      10%{ opacity:.55 }
+      90%{ opacity:.55 }
+      100%{ transform:translateY(-40vh) scale(1.08); opacity:0 }
+    }
+
+    .wrap{
+      min-height:100%;
+      display:flex; align-items:center; justify-content:center;
+      position:relative; padding:56px 16px; z-index:1;
+    }
+
+    /* Hoa (SVG) */
+    .floral{ position:fixed; top:0; bottom:0; width:180px; pointer-events:none; opacity:.95;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.12)); z-index:1; }
+    .left{ left:0 } .right{ right:0; transform:scaleX(-1) }
+
+    /* Thú cưng */
+    .critters{
+      position:absolute; top:8%; left:50%; transform:translateX(-50%);
+      display:flex; gap:10px; opacity:.95; flex-wrap:wrap; justify-content:center;
+    }
+    .critter{
+      background:#fff; border-radius:14px; padding:8px 10px;
+      box-shadow: var(--shadow);
+      display:flex; align-items:center; gap:6px; font-size:14px;
+      animation: bob 3.8s ease-in-out infinite;
+    }
+    .critter:nth-child(2){ animation-delay:.6s}
+    .critter:nth-child(3){ animation-delay:1.2s}
+    .critter:nth-child(4){ animation-delay:1.8s}
+    @keyframes bob{ 0%,100%{ transform:translateY(0)} 50%{ transform:translateY(-6px)} }
+    .badge{
+      background: linear-gradient(135deg, #fff 0%, #efe8ff 100%);
+      border:1px solid #dccfff; color:#5a3fd1; font-weight:600;
+      padding:2px 8px; border-radius:999px; font-size:12px;
+    }
+
+    /* Card */
+    .card{
+      width:min(760px, 92vw); background:var(--card); backdrop-filter: blur(6px);
+      border:1px solid #e3d8ff; border-radius:22px; padding:24px; text-align:center;
+      position:relative;
+      box-shadow:
+        0 0 0 2px rgba(209, 196, 255, .32) inset,
+        0 10px 30px rgba(16,8,32,.10),
+        0 0 36px var(--glowA);
+      animation: cardGlow 4s ease-in-out infinite;
+    }
+    @keyframes cardGlow{
+      0%,100%{ box-shadow: 0 0 0 2px rgba(209,196,255,.28) inset, 0 10px 30px rgba(16,8,32,.10), 0 0 28px var(--glowB); }
+      50%    { box-shadow: 0 0 0 2px rgba(209,196,255,.42) inset, 0 10px 30px rgba(16,8,32,.10), 0 0 48px var(--glowA); }
+    }
+
+    h1{ margin:0 0 8px; font-size:28px; color:var(--primary); letter-spacing:.3px;
+        text-shadow: 0 2px 10px rgba(177,140,255,.45); }
+    .subtitle{ margin:0 0 22px; color:#6b5a99; font-size:14px; }
+
+    /* Form nhập tên */
+    .ask{
+      display:flex; flex-direction:column; gap:14px; align-items:center;
+      padding:16px; border-radius:16px; background:#fff; border:1px dashed #dcd0ff;
+    }
+    label{ font-size:16px; font-weight:600 }
+    input[type="text"]{
+      width:100%; max-width:420px; padding:12px 14px;
+      border:1px solid #d8ccff; border-radius:12px; outline:none;
+      font-size:16px; transition:.2s; background:#ffffff;
+    }
+    input[type="text"]:focus{ border-color: var(--primary); box-shadow:0 0 0 4px #e9e2ff }
+
+    /* Trạng thái lỗi (Cách 1) */
+    input[aria-invalid="true"]{ border-color:#e02866; box-shadow:0 0 0 4px #ffe6ef; }
+    #nameError{ display:none; color:#d33; font-size:13px; margin-top:4px; }
+    @keyframes shake-kf{
+      10%,90%{ transform:translateX(-1px) }
+      20%,80%{ transform:translateX(2px) }
+      30%,50%,70%{ transform:translateX(-4px) }
+      40%,60%{ transform:translateX(4px) }
+    }
+    .shake{ animation: shake-kf .35s ease; }
+
+    button{
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color:#fff; border:none; padding:12px 18px; font-size:16px; font-weight:700;
+      border-radius:12px; cursor:pointer; transition:.2s;
+      box-shadow:0 8px 20px rgba(124,92,255,.28);
+    }
+    button:hover{ transform:translateY(-1px); box-shadow:0 10px 24px rgba(124,92,255,.36) }
+    button:active{ transform:translateY(0) }
+
+    /* Khối lời chúc */
+    .message{ display:none; padding:12px 8px; position:relative }
+    .hello{ font-size:18px; margin:8px 0 6px; color:#5a3fd1; font-weight:800;
+            text-shadow: 0 0 12px rgba(177,140,255,.45); }
+    .wish{
+      font-size:18px; line-height:1.65; margin:8px auto 0; max-width:60ch; color:#3f2f66;
+      text-shadow: 0 0 12px rgba(209,196,255,.55), 0 0 24px rgba(177,140,255,.35);
+      animation: glowtext 3.5s ease-in-out infinite;
+    }
+    @keyframes glowtext{
+      0%,100%{ text-shadow: 0 0 10px rgba(209,196,255,.45), 0 0 20px rgba(177,140,255,.28) }
+      50%{ text-shadow: 0 0 16px rgba(209,196,255,.75), 0 0 30px rgba(177,140,255,.45) }
+    }
+
+    .actions{ margin-top:16px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+    .hearts{ display:flex; justify-content:center; gap:10px; margin:14px 0 0; font-size:22px;
+             filter: drop-shadow(0 2px 6px rgba(124,92,255,.35)); }
+    .foot{ margin-top:10px; font-size:12px; color:#6b5a99; }
+
+    /* Floaters */
+    .floaters{ position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+    .floater{ position:absolute; opacity:.9; will-change:transform, opacity;
+              animation: drift 11s linear infinite;
+              filter: drop-shadow(0 2px 6px rgba(60,40,120,.18)); }
+    @keyframes drift{
+      0%{ transform:translateY(110vh) rotate(0deg); opacity:.0 }
+      6%{ opacity:.95 } 92%{ opacity:.95 }
+      100%{ transform:translateY(-10vh) rotate(360deg); opacity:0 }
+    }
+
+    /* Responsive */
+    @media (max-width:560px){
+      .floral{ width:130px; opacity:.9 }
+      .critters{ top:5% }
+      h1{ font-size:24px }
+      .wish{ font-size:17px }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Bokeh -->
+  <div class="bokeh" id="bokeh" aria-hidden="true"></div>
+
+  <!-- SVG hoa bên trái (bên phải mirror bằng CSS nếu muốn) -->
+  <svg class="floral left" viewBox="0 0 200 800" aria-hidden="true">
+    <defs>
+      <linearGradient id="stemLav" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#7bd69a"/><stop offset="100%" stop-color="#4cad67"/>
+      </linearGradient>
+      <radialGradient id="roseLav" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#ffb7e1"/><stop offset="100%" stop-color="#ff65b5"/>
+      </radialGradient>
+      <radialGradient id="sunCenterLav" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#6b4a24"/><stop offset="100%" stop-color="#3b2412"/>
+      </radialGradient>
+      <radialGradient id="sunPetalLav" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#ffe07a"/><stop offset="100%" stop-color="#ffb600"/>
+      </radialGradient>
+      <radialGradient id="tulipLav" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#ffd9ff"/><stop offset="100%" stop-color="#c79bff"/>
+      </radialGradient>
+      <radialGradient id="daisyLav" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#f1efff"/>
+      </radialGradient>
+      <filter id="softLav" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="0.8" />
+      </filter>
+    </defs>
+
+    <!-- Thân & lá -->
+    <g stroke="url(#stemLav)" stroke-width="6" fill="none" stroke-linecap="round">
+      <path d="M100 800 C70 640, 120 540, 95 420" />
+      <path d="M95 560 C50 520, 45 470, 65 440" stroke-width="5"/>
+      <path d="M110 580 C150 540, 160 500, 135 470" stroke-width="5"/>
+    </g>
+    <g fill="#8be0aa">
+      <ellipse cx="70" cy="500" rx="14" ry="26" transform="rotate(-28 70 500)" />
+      <ellipse cx="130" cy="520" rx="14" ry="26" transform="rotate(20 130 520)" />
+      <ellipse cx="85" cy="600" rx="12" ry="20" transform="rotate(-18 85 600)" />
+    </g>
+
+    <!-- Hoa hồng -->
+    <g transform="translate(70,420)">
+      <circle r="5" fill="#ff4d9b"/>
+      <g fill="url(#roseLav)" filter="url(#softLav)">
+        <path d="M0 0 C-18 -8, -22 -30, 0 -28 C22 -30, 18 -8, 0 0Z"/>
+        <path d="M0 0 C18 -8, 22 -30, 0 -28 C-22 -30, -18 -8, 0 0Z" transform="rotate(40)"/>
+        <path d="M0 0 C18 8, 28 20, 0 24 C-28 20, -18 8, 0 0Z" transform="rotate(85)"/>
+        <path d="M0 0 C-16 10, -26 24, 0 26 C26 24, 16 10, 0 0Z" transform="rotate(130)"/>
+      </g>
+    </g>
+
+    <!-- Hướng dương -->
+    <g transform="translate(120,460)">
+      <circle r="16" fill="url(#sunCenterLav)"/>
+      <g fill="url(#sunPetalLav)">
+        <!-- 20 cánh: lược bớt cho gọn -->
+        <g transform="rotate(0)"><path d="M0 -36 C6 -24, 6 -14, 0 -8 C-6 -14, -6 -24, 0 -36Z"/></g>
+        <g transform="rotate(18)"><path d="M0 -36 C6 -24, 6 -14, 0 -8 C-6 -14, -6 -24, 0 -36Z"/></g>
+        <g transform="rotate(36)"><path d="M0 -36 C6 -24, 6 -14, 0 -8 C-6 -14, -6 -24, 0 -36Z"/></g>
+        <!-- ... (các nhóm rotate tiếp như bản cũ) ... -->
+      </g>
+    </g>
+
+    <!-- Tulip -->
+    <g transform="translate(60,520)">
+      <path d="M0 36 C-8 10, -8 -18, 0 -24 C8 -18, 8 10, 0 36Z" fill="url(#tulipLav)"/>
+      <path d="M-6 -4 C-12 -12, -6 -24, 0 -24 C-4 -18, -8 -10, -6 -4Z" fill="#c790ff"/>
+      <path d="M6 -4 C12 -12, 6 -24, 0 -24 C4 -18, 8 -10, 6 -4Z" fill="#c790ff"/>
+      <path d="M0 36 C0 70, 0 100, 0 130" stroke="url(#stemLav)" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <ellipse cx="-8" cy="70" rx="10" ry="18" fill="#8be0aa" transform="rotate(-20 -8 70)" />
+      <ellipse cx="14" cy="80" rx="10" ry="18" fill="#8be0aa" transform="rotate(18 14 80)" />
+    </g>
+
+    <!-- Cúc -->
+    <g transform="translate(30,610)">
+      <circle r="8" fill="#d9a800"/>
+      <g fill="url(#daisyLav)">
+        <ellipse cx="0" cy="-24" rx="5" ry="14"/>
+        <ellipse cx="0" cy="-24" rx="5" ry="14" transform="rotate(20)"/>
+        <ellipse cx="0" cy="-24" rx="5" ry="14" transform="rotate(40)"/>
+        <ellipse cx="0" cy="-24" rx="5" ry="14" transform="rotate(60)"/>
+        <ellipse cx="0" cy="-24" rx="5" ry="14" transform="rotate(80)"/>
+        <ellipse cx="0" cy="-24" rx="5" ry="14" transform="rotate(100)"/>
+        <ellipse cx="0" cy="-24" rx="5" ry="14" transform="rotate(120)"/>
+        <ellipse cx="0" cy="-24" rx="5" ry="14" transform="rotate(140)"/>
+        <ellipse cx="0" cy="-24" rx="5" ry="14" transform="rotate(160)"/>
+        <ellipse cx="0" cy="-24" rx="5" ry="14" transform="rotate(180)"/>
+      </g>
+    </g>
+  </svg>
+
+  <!-- Emoji hoa/tim trôi nổi -->
+  <div class="floaters" aria-hidden="true" id="floaters"></div>
+
+  <div class="wrap">
+    <div class="critters" aria-hidden="true">
+      <div class="critter"><span>🐰</span><span class="badge">Yêu thương</span></div>
+      <div class="critter"><span>🐻</span><span class="badge">Ấm áp</span></div>
+      <div class="critter"><span>🐱</span><span class="badge">Dễ thương</span></div>
+      <div class="critter"><span>🦊</span><span class="badge">Tỏa sáng</span></div>
+    </div>
+
+    <div class="card" id="card">
+      <h1>💜 Chúc mừng Ngày 8/3🌸🌺Nếu vẫn chx có ai chúc thì h đã có t😝💜</h1>
+      <p class="subtitle">Ngày của phái đẹp – dành trọn niềm vui đến bạn!</p>
+
+      <!-- Khối nhập tên -->
+      <div class="ask" id="ask">
+        <label for="name">“Người đẹp xin hãy nhập tên”</label>
+        <input type="text" id="name" placeholder="Ví dụ:ko có ví dụ..." autocomplete="off" />
+        <div id="nameError">Vui lòng nhập tên trước khi nhận lời chúc nhé!</div>
+        <button id="go">Nhận lời chúc</button>
+      </div>
+
+      <!-- Khối lời chúc -->
+      <div class="message" id="message">
+        <div class="hello" id="hello"></div>
+        <div class="wish" id="wish"></div>
+
+        <div class="actions">
+          <button id="another">✨ Lấy lời chúc khác</button>
+        </div>
+
+        <div class="hearts">💜 💖 🌷 💝 🌸</div>
+        <div class="foot" id="footNote">— Huy Duck chúc bạn 1 ngày Quốc tế Phụ nữ 8/3 thật ý nghĩa—</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  /* ========= LỜI CHÚC ========= */
+  const WISHES = [
+    "Chúc {name} xinh gái luôn rạng rỡ như ánh bình minh, dịu dàng như hương lavender và hạnh phúc mỗi ngày! 💜",
+    "Gửi {name} : mong bạn luôn bình an, tỏa sáng và được yêu thương thật nhiều – hôm nay và mãi về sau. ✨",
+    "Ngày 8/3 thêm ngọt ngào khi có {name}. Chúc bạn vạn điều như ý, cười thật tươi và luôn tự hào về chính mình! 🌷",
+    "{name} ơi, chúc bạn thành công, khỏe mạnh và mọi mơ ước đều nở hoa thật đẹp như chính bạn trong năm nay nhé! 💐",
+    "Mong rằng {name} luôn được yêu thương, che chở và gặp thật nhiều điều đẹp đẽ trong cuộc sống. Chúc bạn một ngày 8/3 thật an yên! 💛",
+    "Hy vọng nụ cười của {name} sẽ luôn nở rộ như mùa xuân – không chỉ hôm nay mà suốt cả hành trình phía trước. 🌸",
+    "Chúc bạn một ngày 8/3 nhẹ như gió, đẹp như hoa, rực rỡ như chính trái tim bạn. 💖",
+  ];
+
+  /* ======= Random không trùng: cơ chế pool ======= */
+  let pool = []; // chứa chỉ số còn lại để rút
+  function shuffle(arr){
+    for(let i = arr.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  function refillPool(){
+    pool = shuffle([...WISHES.keys()]);
+  }
+  function pickOneNoRepeat(){
+    if(pool.length === 0) refillPool();
+    const idx = pool.pop(); // rút 1 chỉ số từ cuối mảng (đã xáo trộn)
+    return { text: WISHES[idx], index: idx, remaining: pool.length };
+  }
+
+  /* ======= Helper ======= */
+  function personalize(t, name){ return t.replaceAll("{name}", name); }
+
+  /* ===== Bokeh ===== */
+  (function spawnBokeh(){
+    const container = document.getElementById('bokeh');
+    const COUNT = 22;
+    for(let i=0;i<COUNT;i++){
+      const s = document.createElement('span');
+      const size = 40 + Math.random()*120;
+      s.style.width = size+'px'; s.style.height = size+'px';
+      s.style.left = (Math.random()*100)+'vw';
+      s.style.bottom = (-20 - Math.random()*40)+'vh';
+      s.style.animationDelay = (Math.random()*10)+'s';
+      s.style.animationDuration = (12 + Math.random()*8)+'s';
+      s.style.background = `radial-gradient(circle at ${20+Math.random()*60}% ${20+Math.random()*60}%,
+                          rgba(255,255,255,${0.75 - Math.random()*0.3}),
+                          rgba(220,205,255,0.08))`;
+      container.appendChild(s);
+    }
+  })();
+
+  /* ===== Floaters ===== */
+  (function spawnFloaters(){
+    const pool = ["💜","🌸","🌹","🌷","🌻","💖","💐","🌼","💞","🌺"];
+    const container = document.getElementById('floaters');
+    const COUNT = 28;
+    for(let i=0;i<COUNT;i++){
+      const el = document.createElement('div');
+      el.className = 'floater';
+      el.textContent = pool[Math.floor(Math.random()*pool.length)];
+      const fs = 24 + Math.random()*26;
+      el.style.fontSize = fs + 'px';
+      el.style.left = (Math.random()*100) + 'vw';
+      el.style.top = (-5 - Math.random()*60) + 'vh';
+      el.style.animationDelay = (Math.random()*10)+'s';
+      el.style.animationDuration = (9 + Math.random()*6)+'s';
+      container.appendChild(el);
+    }
+  })();
+
+  /* ===== DOM refs ===== */
+  const input = document.getElementById('name');
+  const go = document.getElementById('go');
+  const ask = document.getElementById('ask');
+  const msg = document.getElementById('message');
+  const hello = document.getElementById('hello');
+  const wish = document.getElementById('wish');
+  const err = document.getElementById('nameError');
+  const another = document.getElementById('another');
+  const footNote = document.getElementById('footNote');
+
+  /* ===== Cách 1: bắt buộc nhập tên ===== */
+  input.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ go.click(); } });
+  input.addEventListener('input', ()=>{
+    if(err.style.display !== 'none') err.style.display = 'none';
+    input.removeAttribute('aria-invalid');
+  });
+
+  go.addEventListener('click', ()=>{
+    const raw = input.value.trim();
+    if(!raw){
+      err.style.display = 'block';
+      input.setAttribute('aria-invalid', 'true');
+      input.classList.add('shake');
+      input.focus();
+      setTimeout(()=> input.classList.remove('shake'), 400);
+      return;
+    }
+
+    // Lần hiển thị đầu tiên: nạp pool và rút 1 câu
+    refillPool();
+    showWish(raw, /*fresh*/ true);
+  });
+
+  /* ===== Nút “Lấy lời chúc khác” (không trùng) ===== */
+  another.addEventListener('click', ()=>{
+    const raw = input.value.trim();
+    if(!raw){ return; } // về logic sẽ không xảy ra, nhưng cứ chắn cho chắc
+    showWish(raw, /*fresh*/ false);
+  });
+
+  /* ===== Hiển thị lời chúc ===== */
+  function showWish(name, fresh){
+    const picked = pickOneNoRepeat();
+    const text = picked.text;
+
+    hello.textContent = `Gửi ${name},`;
+    wish.textContent = personalize(text, name);
+
+    if(fresh){
+      ask.style.display = 'none';
+      msg.style.display = 'block';
+    }
+
+    // Nếu vừa quay hết vòng (pool vừa rỗng sau khi rút), báo nhẹ
+    if(picked.remaining === 0){
+      footNote.textContent = "— Đã rút hết một vòng lời chúc. Mình vừa làm mới bộ bài cho bạn! —";
+      // Sau khi hiển thị 3 giây, trả lại footnote mặc định
+      setTimeout(()=> footNote.textContent = "— Gửi tặng bạn nhân ngày Quốc tế Phụ nữ 8/3 —", 3000);
+    }
+
+    // Hiệu ứng
+    burstHearts();
+    haloPulse();
+  }
+
+  /* ===== Hiệu ứng trái tim ===== */
+  function burstHearts(){
+    const hearts = ["💜","💖","💗","💝","💘","💕"];
+    for(let i=0;i<16;i++){
+      const span = document.createElement('span');
+      span.textContent = hearts[(Math.random()*hearts.length)|0];
+      span.style.position = 'fixed';
+      span.style.left = '50%'; span.style.top = '50%';
+      span.style.transform = 'translate(-50%,-50%)';
+      span.style.fontSize = (22 + Math.random()*22) + 'px';
+      span.style.opacity = 1;
+      span.style.transition = 'transform 900ms ease, opacity 900ms ease, filter 900ms ease';
+      span.style.filter = 'drop-shadow(0 4px 10px rgba(124,92,255,.45))';
+      document.body.appendChild(span);
+      requestAnimationFrame(()=>{
+        const dx = (Math.random()*2-1)*220;
+        const dy = (Math.random()*2-1)*200;
+        span.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(${Math.random()*360}deg)`;
+        span.style.opacity = 0; span.style.filter = 'drop-shadow(0 0 0 rgba(0,0,0,0))';
+      });
+      setTimeout(()=> span.remove(), 950);
+    }
+  }
+
+  /* ===== Hiệu ứng vầng sáng ===== */
+  function haloPulse(){
+    const el = document.createElement('div');
+    el.style.position = 'absolute';
+    el.style.left = '50%'; el.style.top = '50%';
+    el.style.transform = 'translate(-50%,-50%)';
+    el.style.width = '70%'; el.style.height = '60%';
+    el.style.borderRadius = '28px'; el.style.pointerEvents = 'none';
+    el.style.boxShadow = '0 0 0 0 rgba(124,92,255, 0.35), 0 0 0 0 rgba(200,190,255, 0.35)';
+    el.style.animation = 'haloboom 1.6s ease-out forwards';
+    document.getElementById('card').appendChild(el);
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes haloboom{
+        0%{ box-shadow: 0 0 0 0 rgba(124,92,255,.45), 0 0 0 0 rgba(200,190,255,.45) }
+        100%{ box-shadow: 0 0 40px 24px rgba(124,92,255,0), 0 0 80px 40px rgba(200,190,255,0) }
+      }`;
+    document.head.appendChild(style);
+    setTimeout(()=>{ el.remove(); style.remove(); }, 1700);
+  }
+  </script>
+</body>
+</html>
